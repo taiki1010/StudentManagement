@@ -1,5 +1,6 @@
 package student.management.StudentManagement;
 
+import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -8,6 +9,9 @@ import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface StudentRepository {
+
+  @Select("SELECT * FROM student")
+  List<Student> getAllStudent();
 
   @Select("SELECT * FROM student WHERE name = #{name}")
   Student searchByName(String name);
