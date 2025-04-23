@@ -19,24 +19,11 @@ public class StudentService {
 
   public List<Student> searchStudentList() {
 
-    //年齢が30代の人のみを抽出する
-    //抽出したリストをコントローラーに返す。
-    List<Student> searchedStudentList = repository.search();
-
-    return searchedStudentList.stream()
-        .filter(student -> student.getAge() >= 30 && student.getAge() < 40)
-        .toList();
+    return repository.search();
   }
 
   public List<StudentsCourses> searchStudentsCourseList() {
 
-    //「Javaフルコース」のコース情報のみを抽出する
-    //抽出したリストをコントローラーに返す。
-    List<StudentsCourses> searchedStudentsCourseList = repository.searchStudentsCourses();
-
-    return searchedStudentsCourseList.stream()
-        .filter(studentsCourse -> studentsCourse.getCourseName().equals("Javaフルコース"))
-        .toList();
+    return repository.searchStudentsCourses();
   }
-
 }
