@@ -1,5 +1,6 @@
 package student.management.StudentManagement.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,4 +16,7 @@ public class Student {
   private String area;
   private int age;
   private String gender;
+  private String remark;
+  @JsonProperty("isDeleted")
+  private boolean isDeleted;
 }
