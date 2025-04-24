@@ -30,24 +30,14 @@ public class StudentService {
   }
 
   public void insertStudentDetail(StudentDetail studentDetail) {
-//    List<Student> existStudents = repository.search();
-    String studentId = String.valueOf(repository.search().size() + 1);
-    String studentName = studentDetail.getStudent().getName();
-    String kanaName = studentDetail.getStudent().getKanaName();
-    String nickname = studentDetail.getStudent().getKanaName();
-    String email = studentDetail.getStudent().getEmail();
-    String area = studentDetail.getStudent().getArea();
-    int age = studentDetail.getStudent().getAge();
-    String gender = studentDetail.getStudent().getGender();
-    String remark = studentDetail.getStudent().getRemark();
-    repository.registerStudent(studentId, studentName, kanaName, nickname, email, area, age, gender,
-        remark);
+    Student student = studentDetail.getStudent();
+    repository.registerStudent(student);
 
-    String courseId = String.valueOf(repository.searchStudentsCourses().size() + 1);
-    String courseName = studentDetail.getStudentsCourses().getFirst().getCourseName();
-    LocalDateTime courseStartAt = LocalDateTime.now();
-    LocalDateTime courseEndAt = courseStartAt.plusMonths(3);
-    repository.registerStudentCourse(courseId, studentId, courseName, courseStartAt, courseEndAt);
+    StudentsCourses studentsCourses = studentDetail.getStudentsCourses().getFirst();
+    studentsCourses.setStudentId(student.getId());
+    studentsCourses.setCourseStartAt(LocalDateTime.now());
+    studentsCourses.setCourseEndAt(LocalDateTime.now().plusMonths(3));
+    repository.registerStudentCourse(studentsCourses);
   }
 
 }
