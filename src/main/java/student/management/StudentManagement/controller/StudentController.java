@@ -1,5 +1,6 @@
 package student.management.StudentManagement.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,7 +43,9 @@ public class StudentController {
 
   @GetMapping("/newStudent")
   public String newStudent(Model model) {
-    model.addAttribute("studentDetail", new StudentDetail());
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudentsCourses(Arrays.asList(new StudentsCourses()));
+    model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";
   }
 
@@ -51,7 +54,7 @@ public class StudentController {
     if (result.hasErrors()) {
       return "registerStudent";
     }
-    System.out.println(studentDetail.getStudent().getName() + "さんが登録されました");
+    service.insertStudentDetail(studentDetail);
     return "redirect:/studentList";
   }
 }
