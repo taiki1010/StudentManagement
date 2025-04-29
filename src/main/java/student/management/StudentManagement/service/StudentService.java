@@ -93,8 +93,4 @@ public class StudentService {
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
   }
 
-  @Transactional
-  public void deleteStudent(String id) {
-    repository.deleteStudent(id);
-  }
 }
