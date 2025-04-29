@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="student.management.StudentManagement.repository.StudentRepository">
+
+  <!-- 受講生の全件検索 -->
+  <select id="search"
+    resultType="student.management.StudentManagement.data.Student">
+    SELECT * FROM students
+  </select>
+
+  <!-- 受講生の検索 -->
+  <select id="searchStudent" resultType="student.management.StudentManagement.data.Student">
+    SELECT * FROM students WHERE id = #{id}
+  </select>
+
+  <select id="searchStudentCourseList"
+    resultType="student.management.StudentManagement.data.StudentCourse">
+    SELECT * FROM students_courses
+  </select>
+
+  <select id="searchStudentCourse"
+    resultType="student.management.StudentManagement.data.StudentCourse">
+    SELECT * FROM students_courses WHERE student_id = #{studentId}
+  </select>
+
+  <insert id="registerStudent">
+    INSERT students (name, nickname, kana_name, email, area, age, gender, remark, is_deleted)
+    VALUES(#{name}, #{kanaName}, #{nickname}, #{email}, #{area}, #{age}, #{gender}, #{remark},
+    false)
+  </insert>
+
+  <insert id="registerStudentCourse">
+    INSERT students_courses (student_id, course_name, course_start_at, course_end_at)
+    VALUES(#{studentId}, #{courseName}, #{courseStartAt}, #{courseEndAt})
+  </insert>
+
+  <update id="updateStudent">
+    UPDATE students SET name = #{name}, kana_name = #{kanaName}, nickname = #{nickname}, email =
+    #{email}, area = #{area}, age = #{age}, gender = #{gender}, remark = #{remark}, is_deleted =
+    #{isDeleted} WHERE id = #{id}
+  </update>
+
+  <update id="updateStudentCourse">
+    UPDATE students_courses SET course_name = #{courseName} WHERE id = #{id}
+  </update>
+</mapper>
