@@ -1,5 +1,6 @@
 package student.management.StudentManagement.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,14 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validatedErrors);
   }
 
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<String> handleException(ConstraintViolationException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  }
+
   @ExceptionHandler(NotFoundByIdException.class)
   public ResponseEntity<String> handleException(NotFoundByIdException ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getLocalizedMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
   }
-  
+
 }
