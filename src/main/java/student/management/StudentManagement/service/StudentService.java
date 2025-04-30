@@ -10,7 +10,7 @@ import student.management.StudentManagement.controller.converter.StudentConverte
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
 import student.management.StudentManagement.domain.StudentDetail;
-import student.management.StudentManagement.exception.NotFoundByIdException;
+import student.management.StudentManagement.exception.NotFoundException;
 import student.management.StudentManagement.repository.StudentRepository;
 
 /**
@@ -48,7 +48,7 @@ public class StudentService {
   public StudentDetail searchStudent(String id) {
     Student student = repository.searchStudent(id);
     if (Objects.isNull(student)) {
-      throw new NotFoundByIdException("IDに該当する受講生が存在しません");
+      throw new NotFoundException("IDに該当する受講生が存在しません");
     }
     List<StudentCourse> studentCourseList = repository.searchStudentCourse(student.getId());
     return new StudentDetail(student, studentCourseList);
@@ -94,9 +94,10 @@ public class StudentService {
   @Transactional
   public void updateStudent(StudentDetail studentDetail) {
     if (Objects.isNull(repository.searchStudent(studentDetail.getStudent().getId()))) {
-      throw new NotFoundByIdException("IDに該当する受講生が存在しません");
+      throw new NotFoundException("IDに該当する受講生が存在しません");
     }
     ;
+
     repository.updateStudent(studentDetail.getStudent());
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));

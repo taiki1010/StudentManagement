@@ -1,8 +1,10 @@
 package student.management.StudentManagement.exception;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,13 +25,26 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<String> handleException(ConstraintViolationException ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  public ResponseEntity<Map> handleException(ConstraintViolationException ex) {
+    String message = ex.getConstraintViolations().stream()
+        .map(ConstraintViolation::getMessage)
+        .collect(Collectors.joining());
+    Map<String, String> validatedError = new HashMap<String, String>() {
+      {
+        put("error", message);
+      }
+    };
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validatedError);
   }
 
-  @ExceptionHandler(NotFoundByIdException.class)
-  public ResponseEntity<String> handleException(NotFoundByIdException ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<Map> handleException(NotFoundException ex) {
+    Map<String, String> validatedError = new HashMap<String, String>() {
+      {
+        put("error", ex.getMessage());
+      }
+    };
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validatedError);
   }
 
 }

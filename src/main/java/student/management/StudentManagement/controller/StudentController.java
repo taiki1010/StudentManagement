@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import student.management.StudentManagement.controller.converter.StudentConverter;
 import student.management.StudentManagement.domain.StudentDetail;
-import student.management.StudentManagement.exception.NotFoundByIdException;
+import student.management.StudentManagement.exception.NotFoundException;
 import student.management.StudentManagement.service.StudentService;
 
 /**
@@ -41,7 +41,7 @@ public class StudentController {
    * @return 受講生詳細一覧（全件）
    */
   @GetMapping("/studentList")
-  public List<StudentDetail> getStudentList() throws NotFoundByIdException {
+  public List<StudentDetail> getStudentList() throws NotFoundException {
     return service.searchStudentList();
   }
 
