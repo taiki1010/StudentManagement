@@ -62,9 +62,9 @@ public class StudentService {
    */
   @Transactional
   public StudentDetail insertStudentDetail(StudentDetail studentDetail) {
+    repository.registerStudent(studentDetail.getStudent());
     Student student = studentDetail.getStudent();
 
-    repository.registerStudent(student);
     studentDetail.getStudentCourseList().forEach(studentsCourse -> {
       initStudentsCourse(studentsCourse, student);
       repository.registerStudentCourse(studentsCourse);
