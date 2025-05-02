@@ -10,12 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import student.management.StudentManagement.exception.response.ErrorResponseMessage;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Map> handleException(MethodArgumentNotValidException ex) {
+  public ResponseEntity<Map> handleMethodArgumentNotValidException(
+      MethodArgumentNotValidException ex) {
     Map<String, String> validatedErrors = new HashMap<>();
     ex.getBindingResult().getFieldErrors()
         .forEach(error -> {
@@ -25,26 +27,18 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<Map> handleException(ConstraintViolationException ex) {
+  public ResponseEntity<ErrorResponseMessage> handleConstraintViolationException(
+      ConstraintViolationException ex) {
     String message = ex.getConstraintViolations().stream()
         .map(ConstraintViolation::getMessage)
         .collect(Collectors.joining());
-    Map<String, String> validatedError = new HashMap<String, String>() {
-      {
-        put("error", message);
-      }
-    };
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validatedError);
+    ErrorResponseMessage response = new ErrorResponseMessage("error occured", message);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
   @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<Map> handleException(NotFoundException ex) {
-    Map<String, String> validatedError = new HashMap<String, String>() {
-      {
-        put("error", ex.getMessage());
-      }
-    };
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validatedError);
+  public ResponseEntity<ErrorResponseMessage> handleNotFoundException(NotFoundException ex) {
+    ErrorResponseMessage response = new ErrorResponseMessage("error occured", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
   }
-
 }
