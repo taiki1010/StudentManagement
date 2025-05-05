@@ -7,12 +7,16 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Schema(description = "受講生情報")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Student {
 
   @Schema(description = "ID、MySQLで自動採番", example = "10")
@@ -56,4 +60,6 @@ public class Student {
   @Schema(description = "論理削除フラグ", example = "false")
   @JsonProperty("isDeleted")
   private boolean isDeleted;
+
+
 }

@@ -4,12 +4,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Schema(description = "受講生コース情報")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class StudentCourse {
 
   @Schema(description = "ID、MySQLで自動採番", example = "10")
@@ -32,4 +36,5 @@ public class StudentCourse {
 
   @Schema(description = "受講終了日、開始日から3ヶ月後", example = "2025-08-02T06:38:53.425Z")
   private LocalDateTime courseEndAt;
+
 }
