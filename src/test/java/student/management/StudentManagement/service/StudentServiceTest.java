@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,8 +56,7 @@ class StudentServiceTest {
   @Test
   @DisplayName("searchStudentList()の実行")
   void 受講生詳細の一覧検索_リポジトリとコンバータの処理が適切に呼び出せていること() {
-    List<Student> studentList = new ArrayList<>();
-    List<StudentCourse> studentCourseList = new ArrayList<>();
+    List<Student> studentList = List.of(student);
     when(repository.search()).thenReturn(studentList);
     when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
 
