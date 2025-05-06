@@ -1,5 +1,6 @@
 package student.management.StudentManagement.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,7 +55,7 @@ class StudentServiceTest {
   }
 
   @Test
-  @DisplayName("searchStudentList()の実行")
+  @DisplayName("searchStudentList()の機能実装")
   void 受講生詳細の一覧検索_リポジトリとコンバータの処理が適切に呼び出せていること() {
     List<Student> studentList = List.of(student);
     when(repository.search()).thenReturn(studentList);
@@ -68,19 +69,22 @@ class StudentServiceTest {
   }
 
   @Test
-  @DisplayName("searchStudent(id)の実行")
+  @DisplayName("searchStudent(id)の機能実装")
   void 受講生詳細の一件検索_リポジトリの処理が適切に呼び出せていること() {
 
     when(repository.searchStudent("1")).thenReturn(student);
     when(repository.searchStudentCourse("1")).thenReturn(studentCourseList);
-    sut.searchStudent("1");
+
+    StudentDetail expected = studentDetail;
+    StudentDetail actual = sut.searchStudent("1");
 
     verify(repository, times(1)).searchStudent("1");
     verify(repository, times(1)).searchStudentCourse("1");
+    assertEquals(expected.getStudent().getId(), actual.getStudent().getId());
   }
 
   @Test
-  @DisplayName("searchStudent(id)の実行")
+  @DisplayName("searchStudent(id)の例外処理")
   void 受講生詳細の一件検索_該当するIDの受講生が存在しない場合例外処理が行われること() {
     when(repository.searchStudent("1")).thenReturn(null);
 
@@ -90,7 +94,7 @@ class StudentServiceTest {
   }
 
   @Test
-  @DisplayName("InsertStudentDetail(studentDetail)の実行")
+  @DisplayName("InsertStudentDetail(studentDetail)の機能実装")
   void 受講生詳細の登録_リポジトリの処理が適切に呼び出せていること() {
 
     sut.insertStudentDetail(studentDetail);
@@ -101,7 +105,7 @@ class StudentServiceTest {
   }
 
   @Test
-  @DisplayName("updateStudentDetail(studentDetail)の実行")
+  @DisplayName("updateStudentDetail(studentDetail)の機能実装")
   void 受講生詳細の更新_リポジトリの処理が適切に呼び出せていること() {
 
     when(repository.searchStudent("1")).thenReturn(student);
@@ -113,7 +117,18 @@ class StudentServiceTest {
   }
 
   @Test
-  @DisplayName("updateStudentDetail(studentDetail)の実行")
+  @DisplayName("initStudentsCourse(studentsCourse, student)の機能実装")
+  void 受講生詳細の登録_初期化処理が行われること() {
+    sut.initStudentsCourse(studentCourse, student);
+
+    assertEquals("1", studentCourse.getStudentId());
+    assertEquals(LocalDateTime.now().getHour(), studentCourse.getCourseStartAt().getHour());
+    assertEquals(LocalDateTime.now().plusMonths(3).getYear(),
+        studentCourse.getCourseEndAt().getYear());
+  }
+
+  @Test
+  @DisplayName("updateStudentDetail(studentDetail)の例外処理")
   void 受講生更新_該当するIDの受講生が存在しない場合例外処理が行われること() {
 
     when(repository.searchStudent(studentDetail.getStudent().getId())).thenReturn(null);
