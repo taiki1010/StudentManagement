@@ -49,6 +49,9 @@ dependencies {
     //MyBatis
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
 
+    // Jackson Java8 module
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

@@ -8,13 +8,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "受講生情報")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Student {
 
   @Schema(description = "ID、MySQLで自動採番", example = "10")
@@ -23,15 +23,15 @@ public class Student {
   private String id;
 
   @Schema(description = "氏名", example = "田中太郎")
-  @Size(min = 2, max = 20, message = "名前は20文字以内にしてください")
+  @Size(min = 2, max = 20, message = "氏名は2文字以上、20文字以内にしてください")
   private String name;
 
   @Schema(description = "カナ名", example = "タナカタロウ")
-  @Size(min = 2, max = 20, message = "カナ名は20文字以内にしてください")
+  @Size(min = 2, max = 20, message = "カナ名は2文字以上、20文字以内にしてください")
   private String kanaName;
 
   @Schema(description = "ニックネーム", example = "たろちゃん")
-  @Size(min = 2, max = 20, message = "ニックネームは20文字以内にしてください")
+  @Size(min = 2, max = 20, message = "ニックネームは2文字以上、20文字以内にしてください")
   private String nickname;
 
   @Schema(description = "メールアドレス", example = "tanaka@gmail.com")
@@ -43,7 +43,7 @@ public class Student {
       message = "都道府県名を正しく入力してください")
   private String area;
 
-  @Schema(description = "年齢 0~120まで許可", example = "25")
+  @Schema(description = "年齢 18~120まで許可", example = "25")
   @Min(value = 18, message = "年齢は18歳以上で登録してください")
   @Max(value = 120, message = "年齢は120歳以下で登録してください")
   private int age;
@@ -58,6 +58,5 @@ public class Student {
   @Schema(description = "論理削除フラグ", example = "false")
   @JsonProperty("isDeleted")
   private boolean isDeleted;
-
 
 }
