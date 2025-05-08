@@ -3,9 +3,11 @@ package student.management.StudentManagement.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,8 +77,13 @@ class StudentControllerTest {
   @Test
   @DisplayName("getStudentList()の機能実装")
   void 受講生詳細の一覧検索が実行したときにサービスが実行されること() throws Exception {
+    List<StudentDetail> studentDetailList = List.of(studentDetail);
+    when(service.searchStudentList()).thenReturn(studentDetailList);
+    String expectedJson = mapper.writeValueAsString(studentDetailList);
+
     mockMvc.perform(get("/studentList"))
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedJson));
 
     verify(service, times(1)).searchStudentList();
   }
