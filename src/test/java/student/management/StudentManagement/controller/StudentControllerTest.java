@@ -95,8 +95,12 @@ class StudentControllerTest {
     @DisplayName("getStudent()の機能実装")
     void 受講生詳細の1人分の検索が実行されたときにサービスが実行されること() throws Exception {
       String id = student.getId();
+      when(service.searchStudent(id)).thenReturn(studentDetail);
+      String expectedJson = mapper.writeValueAsString(studentDetail);
+
       mockMvc.perform(get("/student/" + id))
-          .andExpect(status().isOk());
+          .andExpect(status().isOk())
+          .andExpect(content().json(expectedJson));
 
       verify(service, times(1)).searchStudent(id);
     }
