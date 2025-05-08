@@ -76,7 +76,8 @@ class StudentControllerTest {
 
   @Test
   @DisplayName("getStudentList()の機能実装")
-  void 受講生詳細の一覧検索が実行したときにサービスが実行されること() throws Exception {
+  void 受講生詳細の一覧検索が実行したときにサービスが実行されJsonが返却されること()
+      throws Exception {
     List<StudentDetail> studentDetailList = List.of(studentDetail);
     when(service.searchStudentList()).thenReturn(studentDetailList);
     String expectedJson = mapper.writeValueAsString(studentDetailList);
@@ -93,7 +94,8 @@ class StudentControllerTest {
 
     @Test
     @DisplayName("getStudent()の機能実装")
-    void 受講生詳細の1人分の検索が実行されたときにサービスが実行されること() throws Exception {
+    void 受講生詳細の1人分の検索が実行されたときにサービス実行されJsonが返却されること()
+        throws Exception {
       String id = student.getId();
       when(service.searchStudent(id)).thenReturn(studentDetail);
       String expectedJson = mapper.writeValueAsString(studentDetail);
@@ -107,21 +109,23 @@ class StudentControllerTest {
 
     @Test
     @DisplayName("getStudent()の例外処理")
-    void 受講生詳細の検索でidが空のときにエラーレスポンスを返すこと() throws Exception {
+    void 受講生詳細の検索でidが空のときにNotFoundエラーレスポンスを返すこと() throws Exception {
       mockMvc.perform(get("/student/"))
           .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("getStudent()の例外処理")
-    void 受講生詳細の検索でidが数字以外のときにエラーレスポンスを返すこと() throws Exception {
+    void 受講生詳細の検索でidが数字以外のときにBadRequestエラーレスポンスを返すこと()
+        throws Exception {
       mockMvc.perform(get("/student/abc"))
           .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("getStudent()の例外処理")
-    void 受講生詳細の検索でidが5桁以上のときにエラーレスポンスを返すこと() throws Exception {
+    void 受講生詳細の検索でidが5桁以上のときにBadRequestエラーレスポンスを返すこと()
+        throws Exception {
       mockMvc.perform(get("/student/00000"))
           .andExpect(status().isBadRequest());
     }
@@ -129,7 +133,7 @@ class StudentControllerTest {
 
   @Test
   @DisplayName("registerStudent()の機能実装")
-  void 受講生詳細の登録が実行されたときにサービスが実行されること() throws Exception {
+  void 受講生詳細の登録が実行されたときにOKステータスが返却されること() throws Exception {
     String json = mapper.writeValueAsString(studentDetail);
 
     mockMvc.perform(post("/registerStudent")
@@ -142,7 +146,7 @@ class StudentControllerTest {
 
   @Test
   @DisplayName("updateStudent()の機能実装")
-  void 受講生詳細の更新が実行されたときにサービスが実行されること() throws Exception {
+  void 受講生詳細の更新が実行されたときにOKステータスが返却されること() throws Exception {
     String json = mapper.writeValueAsString(studentDetail);
 
     mockMvc.perform(put("/updateStudent")
@@ -161,7 +165,8 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"1", "11", "111", "9999"})
-      void 受講生詳細の受講生でIDに4桁以内の数字を用いたときに実行されること(String id) {
+      void 受講生詳細の受講生でIDに4桁以内の数字を用いたときにオブジェクトが作成されること(
+          String id) {
         student.setId(id);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
@@ -169,7 +174,7 @@ class StudentControllerTest {
       }
 
       @Test
-      void 受講生詳細の受講生でIDに5桁以上の数字を用いたときにチェックがかかること() {
+      void 受講生詳細の受講生でIDに5桁以上の数字を用いたときにバリデーションエラーになること() {
         student.setId("00000");
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
@@ -178,7 +183,7 @@ class StudentControllerTest {
       }
 
       @Test
-      void 受講生詳細の受講生でIDに文字列を用いたときにチェックがかかること() {
+      void 受講生詳細の受講生でIDに文字列を用いたときにバリデーションエラーになること() {
         student.setId("abc");
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
@@ -192,7 +197,7 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"太郎", "Evelyn Starwhisper"})
-      void 受講生詳細の受講生で氏名に2文字以上20文字以内の文字列を用いたときに実行されること(
+      void 受講生詳細の受講生で氏名に2文字以上20文字以内の文字列を用いたときにオブジェクトが作成されること(
           String name) {
         student.setName(name);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -202,7 +207,7 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"太", "Seraphina Moonvalentine"})
-      void 受講生詳細の受講生で氏名に1文字または20文字以上の文字列を用いたときにチェックされること(
+      void 受講生詳細の受講生で氏名に1文字または20文字以上の文字列を用いたときにバリデーションエラーになること(
           String name) {
         student.setName(name);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -219,7 +224,7 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"yamada.tarou@gmail.com", "yamada_tarou@yahoo.co.jp"})
-      void 受講生詳細の受講生でメールアドレスに適した文字列を用いたときに実行されること(
+      void 受講生詳細の受講生でメールアドレスに適した文字列を用いたときにオブジェクトが作成されること(
           String email) {
         student.setEmail(email);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -229,7 +234,7 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"yamada_tarou", "yamada@.com, @yahoo.co.jp"})
-      void 受講生詳細の受講生でメールアドレスに適していない文字列を用いたときにチェックされること(
+      void 受講生詳細の受講生でメールアドレスに適していない文字列を用いたときにバリデーションエラーになること(
           String email) {
         student.setEmail(email);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -245,7 +250,8 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"東京", "京都", "北海道"})
-      void 受講生詳細の受講生で地域に適した文字列を用いたときに実行されること(String area) {
+      void 受講生詳細の受講生で地域に適した文字列を用いたときにオブジェクトが作成されること(
+          String area) {
         student.setArea(area);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
@@ -254,7 +260,7 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"京東", "京都府", "北海道札幌市"})
-      void 受講生詳細の受講生で地域に適していない文字列を用いたときにチェックされること(
+      void 受講生詳細の受講生で地域に適していない文字列を用いたときにバリデーションエラーになること(
           String area) {
         student.setArea(area);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -270,7 +276,8 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"男性", "女性", "その他"})
-      void 受講生詳細の受講生で性別に適した文字列を用いたときに実行されること(String gender) {
+      void 受講生詳細の受講生で性別に適した文字列を用いたときにオブジェクトが作成されること(
+          String gender) {
         student.setGender(gender);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
@@ -279,7 +286,7 @@ class StudentControllerTest {
 
       @ParameterizedTest
       @ValueSource(strings = {"男", "女", "トランス"})
-      void 受講生詳細の受講生で性別に適していない文字列を用いたときにチェックされること(
+      void 受講生詳細の受講生で性別に適していない文字列を用いたときにバリデーションエラーになること(
           String gender) {
         student.setGender(gender);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -296,7 +303,8 @@ class StudentControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Javaフルコース", "AWSコース", "Webマーケティングコース"})
-    void 受講生詳細の受講生コースでコース名に適した文字列を用いたときに実行されること(String name) {
+    void 受講生詳細の受講生コースでコース名に適した文字列を用いたときにオブジェクトが作成されること(
+        String name) {
       studentCourse.setCourseName(name);
       Set<ConstraintViolation<StudentCourse>> violations = validator.validate(studentCourse);
 
@@ -305,7 +313,7 @@ class StudentControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Javaコース", "AWS", "Webマーケコース"})
-    void 受講生詳細の受講生コースでコース名に適していない文字列を用いたときにチェックされること(
+    void 受講生詳細の受講生コースでコース名に適していない文字列を用いたときにバリデーションエラーになること(
         String name) {
       studentCourse.setCourseName(name);
       Set<ConstraintViolation<StudentCourse>> violations = validator.validate(studentCourse);
