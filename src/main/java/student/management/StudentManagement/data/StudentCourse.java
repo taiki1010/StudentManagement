@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "受講生コース情報")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class StudentCourse {
 
   @Schema(description = "ID、MySQLで自動採番", example = "10")
