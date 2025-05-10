@@ -27,34 +27,43 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    //Thymeleaf
+    // Thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    //Validation
+    // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation:3.4.5'
 
-    //OpenAPI Generator
+    // OpenAPI Generator
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
-    //Apache Commons Lang
+    // Apache Commons Lang
     implementation 'org.apache.commons:commons-lang3:3.14.0'
 
-    //lombok
+    // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    //MySQLドライバ
+    // MySQLドライバ
     runtimeOnly 'com.mysql:mysql-connector-j'
 
-    //MyBatis
+    // MyBatis
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
 
     // Jackson Java8 module
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+    // Tomcat
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    // SpringBoot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // MyBatis Test
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
+
+    // H2(InMemoryDB)
+    testImplementation 'com.h2database:h2:2.3.232'
 }
 
 tasks.named('test') {

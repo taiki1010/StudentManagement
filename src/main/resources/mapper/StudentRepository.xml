@@ -27,13 +27,13 @@
   </select>
 
   <insert id="registerStudent" useGeneratedKeys="true" keyProperty="id">
-    INSERT students (name, nickname, kana_name, email, area, age, gender, remark, is_deleted)
+    INSERT INTO students (name, kana_name, nickname, email, area, age, gender, remark, is_deleted)
     VALUES(#{name}, #{kanaName}, #{nickname}, #{email}, #{area}, #{age}, #{gender}, #{remark},
     false)
   </insert>
 
   <insert id="registerStudentCourse" useGeneratedKeys="true" keyProperty="id">
-    INSERT students_courses (student_id, course_name, course_start_at, course_end_at)
+    INSERT INTO students_courses (student_id, course_name, course_start_at, course_end_at)
     VALUES(#{studentId}, #{courseName}, #{courseStartAt}, #{courseEndAt})
   </insert>
 
