@@ -75,8 +75,7 @@ class StudentRepositoryTest {
     List<Student> actual = sut.search();
 
     assertEquals(5, actual.size());
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -85,8 +84,7 @@ class StudentRepositoryTest {
         "taro.sato@example.com", "東京", 25, "男性", "", false);
     Student actual = sut.searchStudent("1");
 
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -95,8 +93,7 @@ class StudentRepositoryTest {
     List<StudentCourse> actual = sut.searchStudentCourseList();
 
     assertEquals(10, actual.size());
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
 
   }
 
@@ -111,8 +108,7 @@ class StudentRepositoryTest {
     List<StudentCourse> actual = sut.searchStudentCourse("1");
 
     assertEquals(2, actual.size());
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -132,8 +128,7 @@ class StudentRepositoryTest {
     List<Student> actual = sut.search();
 
     assertEquals(6, actual.size());
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
     assertEquals("6", actual.get(5).getId()); // 自動インクリメントされているか確認
   }
 
@@ -151,8 +146,7 @@ class StudentRepositoryTest {
     List<StudentCourse> actual = sut.searchStudentCourseList();
 
     assertEquals(11, actual.size());
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
     assertEquals("11", actual.get(10).getId()); // 自動インクリメントがされているか確認
   }
 
@@ -166,8 +160,7 @@ class StudentRepositoryTest {
     Student expected = student;
     Student actual = sut.searchStudent("1");
 
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
     assertTrue(actual.isDeleted());
   }
 
@@ -181,8 +174,7 @@ class StudentRepositoryTest {
     StudentCourse expected = studentCourse;
     StudentCourse actual = sut.searchStudentCourse("1").getFirst();
 
-    assertEquals(expected.hashCode(), actual.hashCode());
-    assertTrue(actual.equals(expected));
+    assertEquals(expected, actual);
   }
 
 }
