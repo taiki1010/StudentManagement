@@ -27,7 +27,7 @@
   </select>
 
   <insert id="registerStudent" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO students (name, nickname, kana_name, email, area, age, gender, remark, is_deleted)
+    INSERT INTO students (name, kana_name, nickname, email, area, age, gender, remark, is_deleted)
     VALUES(#{name}, #{kanaName}, #{nickname}, #{email}, #{area}, #{age}, #{gender}, #{remark},
     false)
   </insert>
