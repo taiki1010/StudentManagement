@@ -26,6 +26,16 @@
     SELECT * FROM students_courses WHERE student_id = #{studentId}
   </select>
 
+  <select id="searchApplicationStatusList"
+    resultType="student.management.StudentManagement.data.ApplicationStatus">
+    SELECT * FROM application_status
+  </select>
+
+  <select id="searchApplicationStatus"
+    resultType="student.management.StudentManagement.data.ApplicationStatus">
+    SELECT * FROM application_status WHERE course_id = #{courseId}
+  </select>
+
   <insert id="registerStudent" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO students (name, kana_name, nickname, email, area, age, gender, remark, is_deleted)
     VALUES(#{name}, #{kanaName}, #{nickname}, #{email}, #{area}, #{age}, #{gender}, #{remark},
@@ -37,6 +47,11 @@
     VALUES(#{studentId}, #{courseName}, #{courseStartAt}, #{courseEndAt})
   </insert>
 
+  <insert id="registerApplicationStatus" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO application_status(course_id, status)
+    VALUES(#{courseId}, #{status})
+  </insert>
+
   <update id="updateStudent">
     UPDATE students SET name = #{name}, kana_name = #{kanaName}, nickname = #{nickname}, email =
     #{email}, area = #{area}, age = #{age}, gender = #{gender}, remark = #{remark}, is_deleted =
@@ -45,5 +60,9 @@
 
   <update id="updateStudentCourse">
     UPDATE students_courses SET course_name = #{courseName} WHERE id = #{id}
+  </update>
+
+  <update id="updateApplicationStatus">
+    UPDATE application_status SET status = #{status} WHERE id = #{id}
   </update>
 </mapper>

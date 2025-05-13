@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import student.management.StudentManagement.controller.converter.StudentConverter;
+import student.management.StudentManagement.data.StudentCourse;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.exception.NotFoundException;
 import student.management.StudentManagement.exception.response.ErrorResponseMessage;
@@ -131,7 +132,6 @@ public class StudentController {
     return ResponseEntity.ok(responseStudentDetail);
   }
 
-
   @Operation(summary = "受講生更新", description = "受講生1人分の情報を更新します。リクエストはjson形式",
       responses = {
           @ApiResponse(
@@ -159,5 +159,14 @@ public class StudentController {
   public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました");
+  }
+
+  @PostMapping("/addCourse/{studentId}")
+  public ResponseEntity<String> addStudentCourse(@RequestBody @Valid StudentCourse studentCourse,
+      @PathVariable("studentId") @NotBlank(message = "IDが空になっています")
+      @Pattern(regexp = "^\\d+$", message = "IDは数字を指定してください")
+      @Size(min = 1, max = 4, message = "IDは4桁以内にしてください") String studentId) {
+    service.addStudentCourse(studentId, studentCourse);
+    return ResponseEntity.ok("コースが追加されました");
   }
 }
