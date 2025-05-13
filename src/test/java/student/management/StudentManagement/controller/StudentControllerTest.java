@@ -15,7 +15,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +28,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import student.management.StudentManagement.data.ApplicationStatus;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.service.StudentService;
 
@@ -55,7 +56,10 @@ class StudentControllerTest {
 
   private Student student;
   private StudentCourse studentCourse;
+  private ApplicationStatus applicationStatus;
+  private StudentCourseWithApplicationStatus studentCourseWithApplicationStatus;
   private List<StudentCourse> studentCourseList;
+  private List<StudentCourseWithApplicationStatus> studentCourseWithApplicationStatusList;
   private StudentDetail studentDetail;
   private LocalDateTime now;
 
@@ -70,8 +74,11 @@ class StudentControllerTest {
         "yamada@example.com", "東京", 30, "男性", null, false);
     studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
-    studentCourseList = Arrays.asList(studentCourse);
-    studentDetail = new StudentDetail(student, studentCourseList);
+    applicationStatus = new ApplicationStatus("1", "1", "仮申込");
+    studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
+        applicationStatus.getStatus());
+    studentCourseWithApplicationStatusList = List.of(studentCourseWithApplicationStatus);
+    studentDetail = new StudentDetail(student, studentCourseWithApplicationStatusList);
   }
 
   @Test

@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import student.management.StudentManagement.data.ApplicationStatus;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 
 class StudentConverterTest {
@@ -19,12 +21,18 @@ class StudentConverterTest {
     LocalDateTime now = LocalDateTime.now();
     StudentCourse studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
+    ApplicationStatus applicationStatus = new ApplicationStatus("1", "1", "仮申込");
+    StudentCourseWithApplicationStatus studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(
+        studentCourse, applicationStatus.getStatus());
 
     List<Student> studentList = List.of(student);
-    List<StudentCourse> studentCourseList = List.of(studentCourse);
+    List<StudentCourseWithApplicationStatus> studentCourseWithApplicationStatusList = List.of(
+        studentCourseWithApplicationStatus);
 
-    List<StudentDetail> expected = List.of(new StudentDetail(student, studentCourseList));
-    List<StudentDetail> actual = sut.convertStudentDetails(studentList, studentCourseList);
+    List<StudentDetail> expected = List.of(
+        new StudentDetail(student, studentCourseWithApplicationStatusList));
+    List<StudentDetail> actual = sut.convertStudentDetails(studentList,
+        studentCourseWithApplicationStatusList);
 
     assertEquals(expected, actual);
   }
