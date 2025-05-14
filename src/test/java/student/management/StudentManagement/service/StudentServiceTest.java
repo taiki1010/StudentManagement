@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import student.management.StudentManagement.controller.converter.StudentConverter;
 import student.management.StudentManagement.controller.converter.StudentCourseConverter;
 import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
 import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
@@ -60,7 +61,7 @@ class StudentServiceTest {
         "kanou@example.com", "東京", 30, "男性", null, false);
     studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
-    applicationStatus = new ApplicationStatus("1", "1", "仮申込");
+    applicationStatus = new ApplicationStatus("1", "1", Status.TemporaryApplication.getStatus());
 
     studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
         applicationStatus.getStatus());
@@ -120,7 +121,8 @@ class StudentServiceTest {
   @Test
   @DisplayName("InsertStudentDetail(studentDetail)の機能実装")
   void 受講生詳細の登録_リポジトリの処理が適切に呼び出せていること() {
-    ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1", "仮申込");
+    ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1",
+        Status.TemporaryApplication.getStatus());
 
     sut.insertStudentDetail(studentDetail);
 
@@ -172,7 +174,8 @@ class StudentServiceTest {
   @DisplayName("addStudentCourse(studentId, studentCourseの機能実装)")
   void コース追加_リポジトリの処理が適切に呼び出せていること() {
     String studentId = "1";
-    ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1", "仮申込");
+    ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1",
+        Status.TemporaryApplication.getStatus());
 
     sut.addStudentCourse(studentId, studentCourse);
 

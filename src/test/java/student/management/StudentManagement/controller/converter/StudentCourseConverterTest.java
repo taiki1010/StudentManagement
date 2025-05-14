@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.StudentCourse;
 import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 
@@ -19,7 +20,8 @@ class StudentCourseConverterTest {
     LocalDateTime now = LocalDateTime.now();
     StudentCourse studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
-    ApplicationStatus applicationStatus = new ApplicationStatus("1", "1", "仮申込");
+    ApplicationStatus applicationStatus = new ApplicationStatus("1", "1",
+        Status.TemporaryApplication.getStatus());
     StudentCourseWithApplicationStatus studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(
         studentCourse, applicationStatus.getStatus());
 

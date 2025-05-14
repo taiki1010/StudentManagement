@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
 
@@ -73,17 +74,19 @@ class StudentRepositoryTest {
   }
 
   private List<ApplicationStatus> createInsertedApplicationStatusList() {
+    String inProgress = Status.InProgress.getStatus();
+    String temporaryApplication = Status.TemporaryApplication.getStatus();
     return new ArrayList<ApplicationStatus>(List.of(
-        new ApplicationStatus("1", "1", "受講中"),
-        new ApplicationStatus("2", "2", "受講中"),
-        new ApplicationStatus("3", "3", "受講中"),
-        new ApplicationStatus("4", "4", "受講中"),
-        new ApplicationStatus("5", "5", "受講中"),
-        new ApplicationStatus("6", "6", "仮申込"),
-        new ApplicationStatus("7", "7", "仮申込"),
-        new ApplicationStatus("8", "8", "仮申込"),
-        new ApplicationStatus("9", "9", "仮申込"),
-        new ApplicationStatus("10", "10", "仮申込")
+        new ApplicationStatus("1", "1", inProgress),
+        new ApplicationStatus("2", "2", inProgress),
+        new ApplicationStatus("3", "3", inProgress),
+        new ApplicationStatus("4", "4", inProgress),
+        new ApplicationStatus("5", "5", inProgress),
+        new ApplicationStatus("6", "6", temporaryApplication),
+        new ApplicationStatus("7", "7", temporaryApplication),
+        new ApplicationStatus("8", "8", temporaryApplication),
+        new ApplicationStatus("9", "9", temporaryApplication),
+        new ApplicationStatus("10", "10", temporaryApplication)
     ));
   }
 
@@ -140,7 +143,7 @@ class StudentRepositoryTest {
 
   @Test
   void 申込状況の受講生コースIDに紐づく検索が行えること() {
-    ApplicationStatus expected = new ApplicationStatus("1", "1", "受講中");
+    ApplicationStatus expected = new ApplicationStatus("1", "1", Status.InProgress.getStatus());
     ApplicationStatus actual = sut.searchApplicationStatus("1");
 
     assertEquals(expected, actual);
@@ -188,10 +191,10 @@ class StudentRepositoryTest {
   @Test
   void 申込状況の登録が行えること() {
     ApplicationStatus applicationStatus = new ApplicationStatus(Integer.toString(anyInt()), "1",
-        "仮申込");
+        Status.TemporaryApplication.getStatus());
 
     List<ApplicationStatus> expected = insertedApplicationStatusList;
-    expected.add(new ApplicationStatus("11", "1", "仮申込"));
+    expected.add(new ApplicationStatus("11", "1", Status.TemporaryApplication.getStatus()));
 
     sut.registerApplicationStatus(applicationStatus);
     List<ApplicationStatus> actual = sut.searchApplicationStatusList();
@@ -230,7 +233,8 @@ class StudentRepositoryTest {
 
   @Test
   void 申込詳細の更新が行えること() {
-    ApplicationStatus applicationStatus = new ApplicationStatus("1", "1", "本申込");
+    ApplicationStatus applicationStatus = new ApplicationStatus("1", "1",
+        Status.TemporaryApplication.getStatus());
 
     sut.updateApplicationStatus(applicationStatus);
     ApplicationStatus expected = applicationStatus;
