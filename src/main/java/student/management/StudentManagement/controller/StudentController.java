@@ -11,7 +11,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -161,12 +163,15 @@ public class StudentController {
     return ResponseEntity.ok("更新処理が成功しました");
   }
 
-  @PostMapping("/addCourse/{studentId}")
-  public ResponseEntity<String> addStudentCourse(@RequestBody @Valid StudentCourse studentCourse,
+  @PostMapping("/students/{studentId}/courses")
+  public ResponseEntity<Map<String, String>> addStudentCourse(
+      @RequestBody @Valid StudentCourse studentCourse,
       @PathVariable("studentId") @NotBlank(message = "IDが空になっています")
       @Pattern(regexp = "^\\d+$", message = "IDは数字を指定してください")
       @Size(min = 1, max = 4, message = "IDは4桁以内にしてください") String studentId) {
     service.addStudentCourse(studentId, studentCourse);
-    return ResponseEntity.ok("コースが追加されました");
+    Map<String, String> message = new HashMap<String, String>();
+    message.put("message", "コースが追加されました");
+    return ResponseEntity.ok(message);
   }
 }

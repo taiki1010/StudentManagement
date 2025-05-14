@@ -72,7 +72,7 @@ public interface StudentRepository {
   void registerStudentCourse(StudentCourse studentCourse);
 
   /**
-   * 申込状況を新規登録します。IDに関しは自動採番を行う。
+   * 申込状況を新規登録します。IDに関しては自動採番を行う。
    *
    * @param applicationStatus 申込状況
    */

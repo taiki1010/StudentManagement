@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import student.management.StudentManagement.controller.converter.StudentConverter;
 import student.management.StudentManagement.controller.converter.StudentCourseConverter;
 import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
 import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
@@ -82,7 +83,7 @@ public class StudentService {
     studentDetail.getStudentCourseWithApplicationStatusList()
         .forEach(studentCourseWithApplicationStatus -> {
           StudentCourse studentCourse = studentCourseWithApplicationStatus.getStudentCourse();
-          String status = "仮申込";
+          String status = Status.TemporaryApplication.getStatus();
           ApplicationStatus applicationStatus = new ApplicationStatus();
 
           initStudentCourse(studentCourse, studentId);
@@ -134,7 +135,7 @@ public class StudentService {
     initStudentCourse(studentCourse, studentId);
     repository.registerStudentCourse(studentCourse);
 
-    String status = "仮申込";
+    String status = Status.TemporaryApplication.getStatus();
     String studentCourseId = studentCourse.getId();
     ApplicationStatus applicationStatus = new ApplicationStatus();
     applicationStatus.setCourseId(studentCourseId);
