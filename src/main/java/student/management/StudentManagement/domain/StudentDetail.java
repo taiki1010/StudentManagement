@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import student.management.StudentManagement.data.Student;
-import student.management.StudentManagement.data.StudentCourse;
 
 @Schema(description = "受講生詳細")
 @Data
@@ -21,5 +20,5 @@ public class StudentDetail {
 
   @Schema(description = "受講生コース情報")
   @Valid
-  private List<StudentCourse> studentCourseList;
+  private List<StudentCourseWithApplicationStatus> studentCourseWithApplicationStatusList;
 }

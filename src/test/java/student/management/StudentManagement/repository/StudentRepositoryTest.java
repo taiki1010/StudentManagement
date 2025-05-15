@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
 
@@ -22,11 +24,13 @@ class StudentRepositoryTest {
 
   private List<Student> insertedStudentList;
   private List<StudentCourse> insertedStudentCourseList;
+  private List<ApplicationStatus> insertedApplicationStatusList;
 
   @BeforeEach
   void before() {
     insertedStudentList = createInsertedStudentList();
     insertedStudentCourseList = createInsertedStudentCourseList();
+    insertedApplicationStatusList = createInsertedApplicationStatusList();
   }
 
   private List<Student> createInsertedStudentList() {
@@ -69,6 +73,24 @@ class StudentRepositoryTest {
     ));
   }
 
+  private List<ApplicationStatus> createInsertedApplicationStatusList() {
+    String inProgress = Status.IN_PROGRESS.getStatus();
+    String temporaryApplication = Status.TEMPORARY_APPLICATION.getStatus();
+    return new ArrayList<ApplicationStatus>(List.of(
+        new ApplicationStatus("1", "1", inProgress),
+        new ApplicationStatus("2", "2", inProgress),
+        new ApplicationStatus("3", "3", inProgress),
+        new ApplicationStatus("4", "4", inProgress),
+        new ApplicationStatus("5", "5", inProgress),
+        new ApplicationStatus("6", "6", temporaryApplication),
+        new ApplicationStatus("7", "7", temporaryApplication),
+        new ApplicationStatus("8", "8", temporaryApplication),
+        new ApplicationStatus("9", "9", temporaryApplication),
+        new ApplicationStatus("10", "10", temporaryApplication)
+    ));
+  }
+
+
   @Test
   void 受講生の全件検索が行えること() {
     List<Student> expected = insertedStudentList;
@@ -94,7 +116,6 @@ class StudentRepositoryTest {
 
     assertEquals(10, actual.size());
     assertEquals(expected, actual);
-
   }
 
   @Test
@@ -108,6 +129,23 @@ class StudentRepositoryTest {
     List<StudentCourse> actual = sut.searchStudentCourse("1");
 
     assertEquals(2, actual.size());
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void 申込状況の全件検索が行えること() {
+    List<ApplicationStatus> expected = createInsertedApplicationStatusList();
+    List<ApplicationStatus> actual = sut.searchApplicationStatusList();
+
+    assertEquals(10, actual.size());
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void 申込状況の受講生コースIDに紐づく検索が行えること() {
+    ApplicationStatus expected = new ApplicationStatus("1", "1", Status.IN_PROGRESS.getStatus());
+    ApplicationStatus actual = sut.searchApplicationStatus("1");
+
     assertEquals(expected, actual);
   }
 
@@ -151,6 +189,22 @@ class StudentRepositoryTest {
   }
 
   @Test
+  void 申込状況の登録が行えること() {
+    ApplicationStatus applicationStatus = new ApplicationStatus(Integer.toString(anyInt()), "1",
+        Status.TEMPORARY_APPLICATION.getStatus());
+
+    List<ApplicationStatus> expected = insertedApplicationStatusList;
+    expected.add(new ApplicationStatus("11", "1", Status.TEMPORARY_APPLICATION.getStatus()));
+
+    sut.registerApplicationStatus(applicationStatus);
+    List<ApplicationStatus> actual = sut.searchApplicationStatusList();
+
+    assertEquals(11, actual.size());
+    assertEquals(expected, actual);
+    assertEquals("11", actual.get(10).getId());
+  }
+
+  @Test
   void 受講生の更新と論理削除が行えること() {
     Student student = new Student("1", "山田 花子", "ヤマダ ハナコ", "はなちゃん",
         "hana@example.com", "大阪", 30, "女性", "更新されました", true
@@ -173,6 +227,18 @@ class StudentRepositoryTest {
     sut.updateStudentCourse(studentCourse);
     StudentCourse expected = studentCourse;
     StudentCourse actual = sut.searchStudentCourse("1").getFirst();
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void 申込詳細の更新が行えること() {
+    ApplicationStatus applicationStatus = new ApplicationStatus("1", "1",
+        Status.TEMPORARY_APPLICATION.getStatus());
+
+    sut.updateApplicationStatus(applicationStatus);
+    ApplicationStatus expected = applicationStatus;
+    ApplicationStatus actual = sut.searchApplicationStatus("1");
 
     assertEquals(expected, actual);
   }

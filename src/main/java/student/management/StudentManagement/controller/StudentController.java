@@ -11,7 +11,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import student.management.StudentManagement.controller.converter.StudentConverter;
+import student.management.StudentManagement.data.StudentCourse;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.exception.NotFoundException;
 import student.management.StudentManagement.exception.response.ErrorResponseMessage;
@@ -131,7 +134,6 @@ public class StudentController {
     return ResponseEntity.ok(responseStudentDetail);
   }
 
-
   @Operation(summary = "受講生更新", description = "受講生1人分の情報を更新します。リクエストはjson形式",
       responses = {
           @ApiResponse(
@@ -159,5 +161,17 @@ public class StudentController {
   public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました");
+  }
+
+  @PostMapping("/students/{studentId}/courses")
+  public ResponseEntity<Map<String, String>> addStudentCourse(
+      @RequestBody @Valid StudentCourse studentCourse,
+      @PathVariable("studentId") @NotBlank(message = "IDが空になっています")
+      @Pattern(regexp = "^\\d+$", message = "IDは数字を指定してください")
+      @Size(min = 1, max = 4, message = "IDは4桁以内にしてください") String studentId) {
+    service.addStudentCourse(studentId, studentCourse);
+    Map<String, String> message = new HashMap<String, String>();
+    message.put("message", "コースが追加されました");
+    return ResponseEntity.ok(message);
   }
 }

@@ -16,8 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import student.management.StudentManagement.controller.converter.StudentConverter;
+import student.management.StudentManagement.controller.converter.StudentCourseConverter;
+import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.exception.NotFoundException;
 import student.management.StudentManagement.repository.StudentRepository;
@@ -29,18 +33,25 @@ class StudentServiceTest {
   private StudentRepository repository;
 
   @Mock
-  private StudentConverter converter;
+  private StudentConverter studentConverter;
+
+  @Mock
+  private StudentCourseConverter studentCourseConverter;
 
   private StudentService sut;
 
   private Student student;
   private StudentCourse studentCourse;
+  private ApplicationStatus applicationStatus;
+  private StudentCourseWithApplicationStatus studentCourseWithApplicationStatus;
   private List<StudentCourse> studentCourseList;
+  private List<ApplicationStatus> applicationStatusList;
+  private List<StudentCourseWithApplicationStatus> studentCourseWithApplicationStatusList;
   private StudentDetail studentDetail;
 
   @BeforeEach
   void before() {
-    sut = new StudentService(repository, converter);
+    sut = new StudentService(repository, studentConverter, studentCourseConverter);
     createSampleStudentDetail();
   }
 
@@ -50,8 +61,12 @@ class StudentServiceTest {
         "kanou@example.com", "東京", 30, "男性", null, false);
     studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
-    studentCourseList = Arrays.asList(studentCourse);
-    studentDetail = new StudentDetail(student, studentCourseList);
+    applicationStatus = new ApplicationStatus("1", "1", Status.TEMPORARY_APPLICATION.getStatus());
+
+    studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
+        applicationStatus.getStatus());
+    studentCourseWithApplicationStatusList = Arrays.asList(studentCourseWithApplicationStatus);
+    studentDetail = new StudentDetail(student, studentCourseWithApplicationStatusList);
   }
 
   @Test
@@ -60,12 +75,16 @@ class StudentServiceTest {
     List<Student> studentList = List.of(student);
     when(repository.search()).thenReturn(studentList);
     when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
+    when(repository.searchApplicationStatusList()).thenReturn(applicationStatusList);
+    when(studentCourseConverter.convertStudentCourseWithApplicationStatus(studentCourseList,
+        applicationStatusList)).thenReturn(studentCourseWithApplicationStatusList);
 
     sut.searchStudentList();
 
     verify(repository, times(1)).search();
     verify(repository, times(1)).searchStudentCourseList();
-    verify(converter, times(1)).convertStudentDetails(studentList, studentCourseList);
+    verify(studentConverter, times(1)).convertStudentDetails(studentList,
+        studentCourseWithApplicationStatusList);
   }
 
   @Test
@@ -74,13 +93,19 @@ class StudentServiceTest {
 
     when(repository.searchStudent("1")).thenReturn(student);
     when(repository.searchStudentCourse("1")).thenReturn(studentCourseList);
+    when(repository.searchApplicationStatusList()).thenReturn(applicationStatusList);
+    when(studentCourseConverter.convertStudentCourseWithApplicationStatus(studentCourseList,
+        applicationStatusList))
+        .thenReturn(studentCourseWithApplicationStatusList);
 
     StudentDetail expected = studentDetail;
     StudentDetail actual = sut.searchStudent("1");
 
     verify(repository, times(1)).searchStudent("1");
     verify(repository, times(1)).searchStudentCourse("1");
-    assertEquals(expected.getStudent().getId(), actual.getStudent().getId());
+    verify(studentCourseConverter, times(1)).convertStudentCourseWithApplicationStatus(
+        studentCourseList, applicationStatusList);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -96,35 +121,42 @@ class StudentServiceTest {
   @Test
   @DisplayName("InsertStudentDetail(studentDetail)の機能実装")
   void 受講生詳細の登録_リポジトリの処理が適切に呼び出せていること() {
+    ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1",
+        Status.TEMPORARY_APPLICATION.getStatus());
 
     sut.insertStudentDetail(studentDetail);
 
     verify(repository, times(1)).registerStudent(studentDetail.getStudent());
     verify(repository, times(1)).registerStudentCourse(
-        studentDetail.getStudentCourseList().getFirst());
+        studentDetail.getStudentCourseWithApplicationStatusList().getFirst().getStudentCourse());
+    verify(repository, times(1)).registerApplicationStatus(expectedApplicationStatus);
   }
+
+  @Test
+  @DisplayName("initStudentsCourse(studentsCourse, student)の機能実装")
+  void 受講生詳細の登録_初期化処理が行われること() {
+    sut.initStudentCourse(studentCourse, student.getId());
+
+    assertEquals("1", studentCourse.getStudentId());
+    assertEquals(LocalDateTime.now().getHour(), studentCourse.getCourseStartAt().getHour());
+    assertEquals(LocalDateTime.now().plusMonths(3).getYear(),
+        studentCourse.getCourseEndAt().getYear());
+  }
+
 
   @Test
   @DisplayName("updateStudentDetail(studentDetail)の機能実装")
   void 受講生詳細の更新_リポジトリの処理が適切に呼び出せていること() {
 
     when(repository.searchStudent("1")).thenReturn(student);
+    when(repository.searchApplicationStatus("1")).thenReturn(
+        applicationStatus);
 
     sut.updateStudent(studentDetail);
 
-    verify(repository, times(1)).updateStudent(student);
+    verify(repository, times(1)).updateStudent(studentDetail.getStudent());
     verify(repository, times(1)).updateStudentCourse(studentCourse);
-  }
-
-  @Test
-  @DisplayName("initStudentsCourse(studentsCourse, student)の機能実装")
-  void 受講生詳細の登録_初期化処理が行われること() {
-    sut.initStudentsCourse(studentCourse, student);
-
-    assertEquals("1", studentCourse.getStudentId());
-    assertEquals(LocalDateTime.now().getHour(), studentCourse.getCourseStartAt().getHour());
-    assertEquals(LocalDateTime.now().plusMonths(3).getYear(),
-        studentCourse.getCourseEndAt().getYear());
+    verify(repository, times(1)).updateApplicationStatus(applicationStatus);
   }
 
   @Test
@@ -136,6 +168,19 @@ class StudentServiceTest {
     assertThrows(NotFoundException.class, () -> {
       sut.updateStudent(studentDetail);
     });
+  }
+
+  @Test
+  @DisplayName("addStudentCourse(studentId, studentCourseの機能実装)")
+  void コース追加_リポジトリの処理が適切に呼び出せていること() {
+    String studentId = "1";
+    ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1",
+        Status.TEMPORARY_APPLICATION.getStatus());
+
+    sut.addStudentCourse(studentId, studentCourse);
+
+    verify(repository, times(1)).registerStudentCourse(studentCourse);
+    verify(repository, times(1)).registerApplicationStatus(expectedApplicationStatus);
   }
 
 }

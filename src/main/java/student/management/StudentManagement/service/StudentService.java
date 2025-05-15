@@ -7,8 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import student.management.StudentManagement.controller.converter.StudentConverter;
+import student.management.StudentManagement.controller.converter.StudentCourseConverter;
+import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.exception.NotFoundException;
 import student.management.StudentManagement.repository.StudentRepository;
@@ -20,12 +24,15 @@ import student.management.StudentManagement.repository.StudentRepository;
 public class StudentService {
 
   private StudentRepository repository;
-  private StudentConverter converter;
+  private StudentConverter studentConverter;
+  private StudentCourseConverter studentCourseConverter;
 
   @Autowired
-  public StudentService(StudentRepository repository, StudentConverter converter) {
+  public StudentService(StudentRepository repository, StudentConverter studentConverter,
+      StudentCourseConverter studentCourseConverter) {
     this.repository = repository;
-    this.converter = converter;
+    this.studentConverter = studentConverter;
+    this.studentCourseConverter = studentCourseConverter;
   }
 
   /**
@@ -36,7 +43,11 @@ public class StudentService {
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.search();
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
-    return converter.convertStudentDetails(studentList, studentCourseList);
+    List<ApplicationStatus> applicationStatusList = repository.searchApplicationStatusList();
+
+    List<StudentCourseWithApplicationStatus> convertedStudentCourseList = studentCourseConverter.convertStudentCourseWithApplicationStatus(
+        studentCourseList, applicationStatusList);
+    return studentConverter.convertStudentDetails(studentList, convertedStudentCourseList);
   }
 
   /**
@@ -51,7 +62,10 @@ public class StudentService {
       throw new NotFoundException("IDに該当する受講生が存在しません");
     }
     List<StudentCourse> studentCourseList = repository.searchStudentCourse(student.getId());
-    return new StudentDetail(student, studentCourseList);
+    List<ApplicationStatus> applicationStatusList = repository.searchApplicationStatusList();
+    List<StudentCourseWithApplicationStatus> studentCourseWithApplicationStatusList = studentCourseConverter.convertStudentCourseWithApplicationStatus(
+        studentCourseList, applicationStatusList);
+    return new StudentDetail(student, studentCourseWithApplicationStatusList);
   }
 
   /**
@@ -64,26 +78,24 @@ public class StudentService {
   public StudentDetail insertStudentDetail(StudentDetail studentDetail) {
     repository.registerStudent(studentDetail.getStudent());
     Student student = studentDetail.getStudent();
+    String studentId = student.getId();
 
-    studentDetail.getStudentCourseList().forEach(studentsCourse -> {
-      initStudentsCourse(studentsCourse, student);
-      repository.registerStudentCourse(studentsCourse);
-    });
+    studentDetail.getStudentCourseWithApplicationStatusList()
+        .forEach(studentCourseWithApplicationStatus -> {
+          StudentCourse studentCourse = studentCourseWithApplicationStatus.getStudentCourse();
+          String status = Status.TEMPORARY_APPLICATION.getStatus();
+          ApplicationStatus applicationStatus = new ApplicationStatus();
+
+          initStudentCourse(studentCourse, studentId);
+          repository.registerStudentCourse(studentCourse);
+
+          String studentCourseId = studentCourse.getId();
+          applicationStatus.setCourseId(studentCourseId);
+          applicationStatus.setStatus(status);
+          studentCourseWithApplicationStatus.setStatus(status);
+          repository.registerApplicationStatus(applicationStatus);
+        });
     return studentDetail;
-  }
-
-  /**
-   * 受講生コース情報を登録する際の初期情報を設定する。
-   *
-   * @param studentsCourse 受講生コース情報
-   * @param student        受講生
-   */
-  void initStudentsCourse(StudentCourse studentsCourse, Student student) {
-    LocalDateTime now = LocalDateTime.now();
-
-    studentsCourse.setStudentId(student.getId());
-    studentsCourse.setCourseStartAt(now);
-    studentsCourse.setCourseEndAt(now.plusMonths(3));
   }
 
   /**
@@ -99,8 +111,50 @@ public class StudentService {
     ;
 
     repository.updateStudent(studentDetail.getStudent());
-    studentDetail.getStudentCourseList()
-        .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
+    studentDetail.getStudentCourseWithApplicationStatusList().forEach(
+        studentCourseWithApplicationStatus -> {
+          StudentCourse studentCourse = studentCourseWithApplicationStatus.getStudentCourse();
+          repository.updateStudentCourse(studentCourseWithApplicationStatus.getStudentCourse());
+
+          ApplicationStatus applicationStatus = repository.searchApplicationStatus(
+              studentCourse.getId());
+          applicationStatus.setStatus(studentCourseWithApplicationStatus.getStatus());
+          repository.updateApplicationStatus(applicationStatus);
+        }
+    );
+  }
+
+  /**
+   * 受講生コースを新しく追加します。
+   *
+   * @param studentId     　受講生ID
+   * @param studentCourse 受講生コース
+   */
+  @Transactional
+  public void addStudentCourse(String studentId, StudentCourse studentCourse) {
+    initStudentCourse(studentCourse, studentId);
+    repository.registerStudentCourse(studentCourse);
+
+    String status = Status.TEMPORARY_APPLICATION.getStatus();
+    String studentCourseId = studentCourse.getId();
+    ApplicationStatus applicationStatus = new ApplicationStatus();
+    applicationStatus.setCourseId(studentCourseId);
+    applicationStatus.setStatus(status);
+    repository.registerApplicationStatus(applicationStatus);
+  }
+
+  /**
+   * 受講生コース情報を登録する際の初期情報を設定する。
+   *
+   * @param studentCourse 受講生コース情報
+   * @param studentId     受講生
+   */
+  void initStudentCourse(StudentCourse studentCourse, String studentId) {
+    LocalDateTime now = LocalDateTime.now();
+
+    studentCourse.setStudentId(studentId);
+    studentCourse.setCourseStartAt(now);
+    studentCourse.setCourseEndAt(now.plusMonths(3));
   }
 
 }

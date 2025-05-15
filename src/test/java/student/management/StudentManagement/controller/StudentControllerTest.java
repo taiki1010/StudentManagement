@@ -15,8 +15,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,8 +30,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import student.management.StudentManagement.data.ApplicationStatus;
+import student.management.StudentManagement.data.Status;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.service.StudentService;
 
@@ -55,7 +59,10 @@ class StudentControllerTest {
 
   private Student student;
   private StudentCourse studentCourse;
+  private ApplicationStatus applicationStatus;
+  private StudentCourseWithApplicationStatus studentCourseWithApplicationStatus;
   private List<StudentCourse> studentCourseList;
+  private List<StudentCourseWithApplicationStatus> studentCourseWithApplicationStatusList;
   private StudentDetail studentDetail;
   private LocalDateTime now;
 
@@ -70,8 +77,11 @@ class StudentControllerTest {
         "yamada@example.com", "東京", 30, "男性", null, false);
     studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
-    studentCourseList = Arrays.asList(studentCourse);
-    studentDetail = new StudentDetail(student, studentCourseList);
+    applicationStatus = new ApplicationStatus("1", "1", Status.TEMPORARY_APPLICATION.getStatus());
+    studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
+        applicationStatus.getStatus());
+    studentCourseWithApplicationStatusList = List.of(studentCourseWithApplicationStatus);
+    studentDetail = new StudentDetail(student, studentCourseWithApplicationStatusList);
   }
 
   @Test
@@ -155,6 +165,26 @@ class StudentControllerTest {
         .andExpect(status().isOk());
 
     verify(service, times(1)).updateStudent(studentDetail);
+  }
+
+  @Test
+  @DisplayName("addStudentCourse()の機能実装")
+  void 新しいコース情報の追加がされるときにJson形式のメッセージが返却されること() throws Exception {
+    String studentId = "1";
+    String json = mapper.writeValueAsString(studentCourse);
+
+    Map<String, String> expectedMessage = new HashMap<String, String>();
+    expectedMessage.put("message", "コースが追加されました");
+    String expectedJson = mapper.writeValueAsString(expectedMessage);
+
+    mockMvc.perform(post("/students/" + studentId + "/courses")
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedJson))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+    verify(service, times(1)).addStudentCourse(studentId, studentCourse);
   }
 
   @Nested
