@@ -61,7 +61,7 @@ class StudentServiceTest {
         "kanou@example.com", "東京", 30, "男性", null, false);
     studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
-    applicationStatus = new ApplicationStatus("1", "1", Status.TemporaryApplication.getStatus());
+    applicationStatus = new ApplicationStatus("1", "1", Status.TEMPORARY_APPLICATION.getStatus());
 
     studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
         applicationStatus.getStatus());
@@ -122,7 +122,7 @@ class StudentServiceTest {
   @DisplayName("InsertStudentDetail(studentDetail)の機能実装")
   void 受講生詳細の登録_リポジトリの処理が適切に呼び出せていること() {
     ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1",
-        Status.TemporaryApplication.getStatus());
+        Status.TEMPORARY_APPLICATION.getStatus());
 
     sut.insertStudentDetail(studentDetail);
 
@@ -175,7 +175,7 @@ class StudentServiceTest {
   void コース追加_リポジトリの処理が適切に呼び出せていること() {
     String studentId = "1";
     ApplicationStatus expectedApplicationStatus = new ApplicationStatus(null, "1",
-        Status.TemporaryApplication.getStatus());
+        Status.TEMPORARY_APPLICATION.getStatus());
 
     sut.addStudentCourse(studentId, studentCourse);
 

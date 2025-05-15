@@ -77,7 +77,7 @@ class StudentControllerTest {
         "yamada@example.com", "東京", 30, "男性", null, false);
     studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
-    applicationStatus = new ApplicationStatus("1", "1", Status.TemporaryApplication.getStatus());
+    applicationStatus = new ApplicationStatus("1", "1", Status.TEMPORARY_APPLICATION.getStatus());
     studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
         applicationStatus.getStatus());
     studentCourseWithApplicationStatusList = List.of(studentCourseWithApplicationStatus);

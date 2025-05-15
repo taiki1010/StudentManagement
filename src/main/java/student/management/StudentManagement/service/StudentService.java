@@ -83,7 +83,7 @@ public class StudentService {
     studentDetail.getStudentCourseWithApplicationStatusList()
         .forEach(studentCourseWithApplicationStatus -> {
           StudentCourse studentCourse = studentCourseWithApplicationStatus.getStudentCourse();
-          String status = Status.TemporaryApplication.getStatus();
+          String status = Status.TEMPORARY_APPLICATION.getStatus();
           ApplicationStatus applicationStatus = new ApplicationStatus();
 
           initStudentCourse(studentCourse, studentId);
@@ -135,7 +135,7 @@ public class StudentService {
     initStudentCourse(studentCourse, studentId);
     repository.registerStudentCourse(studentCourse);
 
-    String status = Status.TemporaryApplication.getStatus();
+    String status = Status.TEMPORARY_APPLICATION.getStatus();
     String studentCourseId = studentCourse.getId();
     ApplicationStatus applicationStatus = new ApplicationStatus();
     applicationStatus.setCourseId(studentCourseId);

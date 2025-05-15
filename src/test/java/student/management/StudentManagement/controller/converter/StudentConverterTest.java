@@ -23,7 +23,7 @@ class StudentConverterTest {
     StudentCourse studentCourse = new StudentCourse("1", "1", "Javaフルコース", now,
         now.plusMonths(3));
     ApplicationStatus applicationStatus = new ApplicationStatus("1", "1",
-        Status.TemporaryApplication.getStatus());
+        Status.TEMPORARY_APPLICATION.getStatus());
     StudentCourseWithApplicationStatus studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(
         studentCourse, applicationStatus.getStatus());
 

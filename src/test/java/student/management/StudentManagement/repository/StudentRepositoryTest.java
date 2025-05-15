@@ -74,8 +74,8 @@ class StudentRepositoryTest {
   }
 
   private List<ApplicationStatus> createInsertedApplicationStatusList() {
-    String inProgress = Status.InProgress.getStatus();
-    String temporaryApplication = Status.TemporaryApplication.getStatus();
+    String inProgress = Status.IN_PROGRESS.getStatus();
+    String temporaryApplication = Status.TEMPORARY_APPLICATION.getStatus();
     return new ArrayList<ApplicationStatus>(List.of(
         new ApplicationStatus("1", "1", inProgress),
         new ApplicationStatus("2", "2", inProgress),
@@ -143,7 +143,7 @@ class StudentRepositoryTest {
 
   @Test
   void 申込状況の受講生コースIDに紐づく検索が行えること() {
-    ApplicationStatus expected = new ApplicationStatus("1", "1", Status.InProgress.getStatus());
+    ApplicationStatus expected = new ApplicationStatus("1", "1", Status.IN_PROGRESS.getStatus());
     ApplicationStatus actual = sut.searchApplicationStatus("1");
 
     assertEquals(expected, actual);
@@ -191,10 +191,10 @@ class StudentRepositoryTest {
   @Test
   void 申込状況の登録が行えること() {
     ApplicationStatus applicationStatus = new ApplicationStatus(Integer.toString(anyInt()), "1",
-        Status.TemporaryApplication.getStatus());
+        Status.TEMPORARY_APPLICATION.getStatus());
 
     List<ApplicationStatus> expected = insertedApplicationStatusList;
-    expected.add(new ApplicationStatus("11", "1", Status.TemporaryApplication.getStatus()));
+    expected.add(new ApplicationStatus("11", "1", Status.TEMPORARY_APPLICATION.getStatus()));
 
     sut.registerApplicationStatus(applicationStatus);
     List<ApplicationStatus> actual = sut.searchApplicationStatusList();
@@ -234,7 +234,7 @@ class StudentRepositoryTest {
   @Test
   void 申込詳細の更新が行えること() {
     ApplicationStatus applicationStatus = new ApplicationStatus("1", "1",
-        Status.TemporaryApplication.getStatus());
+        Status.TEMPORARY_APPLICATION.getStatus());
 
     sut.updateApplicationStatus(applicationStatus);
     ApplicationStatus expected = applicationStatus;

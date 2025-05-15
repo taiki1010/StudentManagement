@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Status {
-  TemporaryApplication("仮申込"),
-  FormalApplication("本申込"),
-  InProgress("受講中"),
-  Completed("受講修了");
+  TEMPORARY_APPLICATION("仮申込"),
+  FORMAL_APPLICATION("本申込"),
+  IN_PROGRESS("受講中"),
+  COMPLETED("受講修了");
 
   private final String status;
 
