@@ -19,7 +19,7 @@ public class StudentCourseConverter {
       applicationStatusList.forEach(applicationStatus -> {
         if (Objects.equals(studentCourse.getId(), applicationStatus.getCourseId())) {
           studentCourseWithApplicationStatus.setStudentCourse(studentCourse);
-          studentCourseWithApplicationStatus.setStatus(applicationStatus.getStatus());
+          studentCourseWithApplicationStatus.getApplicationStatus().setStatus(applicationStatus.getStatus());
         }
       });
       studentCourseWithApplicationStatusList.add(studentCourseWithApplicationStatus);

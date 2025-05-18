@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import student.management.StudentManagement.data.ApplicationStatus;
 import student.management.StudentManagement.data.Student;
 import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.domain.StudentDetail;
 
 /**
  * 受講生テーブルと受講生コース情報テーブルと紐づくRepositoryです。
@@ -18,6 +19,8 @@ public interface StudentRepository {
    * @return 受講生一覧（全件）
    */
   List<Student> search();
+
+  List<StudentDetail> filterStudentDetail();
 
   /**
    * 受講生の検索を行います。
