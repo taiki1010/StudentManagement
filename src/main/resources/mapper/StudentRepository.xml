@@ -11,6 +11,71 @@
     SELECT * FROM students
   </select>
 
+  <resultMap id="studentDetailMap" type="student.management.StudentManagement.domain.StudentDetail">
+
+    <association property="student" javaType="student.management.StudentManagement.data.Student">
+      <id property="id" column="s_id"/>
+      <result property="name" column="s_name"/>
+      <result property="kanaName" column="s_kana_name"/>
+      <result property="nickname" column="s_nickname"/>
+      <result property="email" column="s_email"/>
+      <result property="area" column="s_area"/>
+      <result property="age" column="s_age"/>
+      <result property="gender" column="s_gender"/>
+      <result property="remark" column="s_remark"/>
+    </association>
+
+    <collection property="studentCourseWithApplicationStatusList"
+                ofType="student.management.StudentManagement.domain.StudentCourseWithApplicationStatus">
+      <association property="studentCourse" javaType="student.management.StudentManagement.data.StudentCourse">
+        <id property="id" column="c_id"/>
+        <result property="studentId" column="c_student_id"/>
+        <result property="courseName" column="c_course_name"/>
+        <result property="courseStartAt" column="c_course_start_at"/>
+        <result property="courseEndAt" column="c_course_end_at"/>
+      </association>
+
+      <association property="applicationStatus" javaType="student.management.StudentManagement.data.ApplicationStatus">
+        <result property="id" column="aps_id"/>
+        <result property="courseId" column="aps_course_id"/>
+        <result property="status" column="aps_status"/>
+      </association>
+    </collection>
+
+  </resultMap>
+
+  <select id="filterStudentDetail" resultMap="studentDetailMap">
+    select
+
+    s.id AS s_id,
+    s.name AS s_name,
+    s.kana_name AS s_kana_name,
+    s.nickname AS s_nickname,
+    s.email AS s_email,
+    s.area AS s_area,
+    s.age AS s_age,
+    s.gender AS s_gender,
+    s.remark AS s_remark,
+
+    c.id AS c_id,
+    c.student_id AS c_student_id,
+    c.course_name AS c_course_name,
+    c.course_start_at AS c_course_start_at,
+    c.course_end_at AS c_course_end_at,
+
+    aps.id AS aps_id,
+    aps.course_id AS aps_course_id,
+    aps.status AS aps_status
+
+    from students s
+    left outer join students_courses c
+    on s.id = c.student_id
+    left outer join application_status aps
+    on c.id = aps.course_id
+
+    where s.is_deleted = 0
+  </select>
+
   <!-- 受講生の検索 -->
   <select id="searchStudent" resultType="student.management.StudentManagement.data.Student">
     SELECT * FROM students WHERE id = #{id}

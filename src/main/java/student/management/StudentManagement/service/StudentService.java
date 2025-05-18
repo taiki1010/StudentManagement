@@ -50,6 +50,11 @@ public class StudentService {
     return studentConverter.convertStudentDetails(studentList, convertedStudentCourseList);
   }
 
+  public List<StudentDetail> filterStudentDetailList() {
+      List<StudentDetail> studentDetailList = repository.filterStudentDetail();
+      return studentDetailList;
+  }
+
   /**
    * 受講生詳細検索です。IDに紐づく受講生情報を取得した後、その受講生に紐づく受講生コース情報を取得して設定します。
    *
@@ -92,7 +97,7 @@ public class StudentService {
           String studentCourseId = studentCourse.getId();
           applicationStatus.setCourseId(studentCourseId);
           applicationStatus.setStatus(status);
-          studentCourseWithApplicationStatus.setStatus(status);
+          studentCourseWithApplicationStatus.getApplicationStatus().setStatus(status);
           repository.registerApplicationStatus(applicationStatus);
         });
     return studentDetail;
@@ -118,7 +123,7 @@ public class StudentService {
 
           ApplicationStatus applicationStatus = repository.searchApplicationStatus(
               studentCourse.getId());
-          applicationStatus.setStatus(studentCourseWithApplicationStatus.getStatus());
+          applicationStatus.setStatus(studentCourseWithApplicationStatus.getApplicationStatus().getStatus());
           repository.updateApplicationStatus(applicationStatus);
         }
     );

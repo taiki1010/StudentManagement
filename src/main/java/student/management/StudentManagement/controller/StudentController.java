@@ -59,6 +59,11 @@ public class StudentController {
     return service.searchStudentList();
   }
 
+  @GetMapping("/filterStudentList")
+  public List<StudentDetail> filterStudentList() {
+      return service.filterStudentDetailList();
+  }
+
   @Operation(
       summary = "受講生検索", description = "受講生一人分の詳細を検索します。idに紐づく生徒が存在しない場合エラーが発生します。",
       responses = {
