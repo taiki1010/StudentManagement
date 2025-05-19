@@ -17,10 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import student.management.StudentManagement.controller.converter.StudentConverter;
 import student.management.StudentManagement.controller.converter.StudentCourseConverter;
-import student.management.StudentManagement.data.ApplicationStatus;
-import student.management.StudentManagement.data.Status;
-import student.management.StudentManagement.data.Student;
-import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.controller.filter.StudentFilter;
+import student.management.StudentManagement.data.*;
 import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.exception.NotFoundException;
@@ -38,6 +36,9 @@ class StudentServiceTest {
   @Mock
   private StudentCourseConverter studentCourseConverter;
 
+  @Mock
+  private StudentFilter studentFilter;
+
   private StudentService sut;
 
   private Student student;
@@ -51,7 +52,7 @@ class StudentServiceTest {
 
   @BeforeEach
   void before() {
-    sut = new StudentService(repository, studentConverter, studentCourseConverter);
+    sut = new StudentService(repository, studentConverter, studentCourseConverter, studentFilter);
     createSampleStudentDetail();
   }
 
@@ -64,14 +65,14 @@ class StudentServiceTest {
     applicationStatus = new ApplicationStatus("1", "1", Status.TEMPORARY_APPLICATION.getStatus());
 
     studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
-        applicationStatus.getStatus());
+        applicationStatus);
     studentCourseWithApplicationStatusList = Arrays.asList(studentCourseWithApplicationStatus);
     studentDetail = new StudentDetail(student, studentCourseWithApplicationStatusList);
   }
 
   @Test
   @DisplayName("searchStudentList()の機能実装")
-  void 受講生詳細の一覧検索_リポジトリとコンバータの処理が適切に呼び出せていること() {
+  void 受講生詳細の一覧検索_パラメータがnullの場合リポジトリとコンバータの処理が適切に呼び出せていること() {
     List<Student> studentList = List.of(student);
     when(repository.search()).thenReturn(studentList);
     when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
@@ -79,12 +80,56 @@ class StudentServiceTest {
     when(studentCourseConverter.convertStudentCourseWithApplicationStatus(studentCourseList,
         applicationStatusList)).thenReturn(studentCourseWithApplicationStatusList);
 
-    sut.searchStudentList();
+    sut.searchStudentList(new FilterParam(null,null,null,null));
 
     verify(repository, times(1)).search();
     verify(repository, times(1)).searchStudentCourseList();
     verify(studentConverter, times(1)).convertStudentDetails(studentList,
         studentCourseWithApplicationStatusList);
+  }
+
+  @Test
+  void 受講生詳細の一覧検索_パラメータに値がある場合リポジトリとコンバータの処理が適切に呼び出せていること() {
+    List<Student> studentList = List.of(student);
+    FilterParam param = new FilterParam("内田", null, null, null);
+    List<StudentDetail> studentDetailList = List.of(studentDetail);
+
+    when(repository.search()).thenReturn(studentList);
+    when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
+    when(repository.searchApplicationStatusList()).thenReturn(applicationStatusList);
+    when(studentCourseConverter.convertStudentCourseWithApplicationStatus(studentCourseList,
+            applicationStatusList)).thenReturn(studentCourseWithApplicationStatusList);
+    when(studentConverter.convertStudentDetails(studentList, studentCourseWithApplicationStatusList)).thenReturn(studentDetailList);
+    when(studentFilter.filterStudentDetails(studentDetailList, param))
+            .thenReturn(studentDetailList);
+
+    sut.searchStudentList(param);
+
+    verify(repository, times(1)).search();
+    verify(repository, times(1)).searchStudentCourseList();
+    verify(studentConverter, times(1)).convertStudentDetails(studentList,
+            studentCourseWithApplicationStatusList);
+    verify(studentFilter, times(1)).filterStudentDetails(studentDetailList, param);
+  }
+
+  @Test
+  void 受講生詳細の一覧検索_該当する受講生が存在しない場合例外処理が発生すること() {
+    List<Student> studentList = List.of(student);
+    FilterParam param = new FilterParam("内田", null, null, null);
+    List<StudentDetail> studentDetailList = List.of(studentDetail);
+    List<StudentDetail> filteredStudentDetailList = List.of();
+
+    when(repository.search()).thenReturn(studentList);
+    when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
+    when(repository.searchApplicationStatusList()).thenReturn(applicationStatusList);
+    when(studentCourseConverter.convertStudentCourseWithApplicationStatus(studentCourseList,
+            applicationStatusList)).thenReturn(studentCourseWithApplicationStatusList);
+    when(studentConverter.convertStudentDetails(studentList, studentCourseWithApplicationStatusList)).thenReturn(studentDetailList);
+    when(studentFilter.filterStudentDetails(studentDetailList, param))
+            .thenReturn(filteredStudentDetailList);
+
+    NotFoundException result = assertThrows(NotFoundException.class, () -> sut.searchStudentList(param));
+    assertEquals("条件に該当する受講生は存在しません", result.getMessage());
   }
 
   @Test

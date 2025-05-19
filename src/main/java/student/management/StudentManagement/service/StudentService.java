@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import student.management.StudentManagement.controller.converter.StudentConverter;
 import student.management.StudentManagement.controller.converter.StudentCourseConverter;
-import student.management.StudentManagement.data.ApplicationStatus;
-import student.management.StudentManagement.data.Status;
-import student.management.StudentManagement.data.Student;
-import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.controller.filter.StudentFilter;
+import student.management.StudentManagement.data.*;
 import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.exception.NotFoundException;
@@ -26,13 +24,15 @@ public class StudentService {
   private StudentRepository repository;
   private StudentConverter studentConverter;
   private StudentCourseConverter studentCourseConverter;
+  private StudentFilter studentFilter;
 
   @Autowired
   public StudentService(StudentRepository repository, StudentConverter studentConverter,
-      StudentCourseConverter studentCourseConverter) {
+      StudentCourseConverter studentCourseConverter, StudentFilter studentFilter) {
     this.repository = repository;
     this.studentConverter = studentConverter;
     this.studentCourseConverter = studentCourseConverter;
+    this.studentFilter = studentFilter;
   }
 
   /**
@@ -40,20 +40,28 @@ public class StudentService {
    *
    * @return 受講生詳細一覧（全件）
    */
-  public List<StudentDetail> searchStudentList() {
+  public List<StudentDetail> searchStudentList(FilterParam filterParam) {
     List<Student> studentList = repository.search();
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
     List<ApplicationStatus> applicationStatusList = repository.searchApplicationStatusList();
 
     List<StudentCourseWithApplicationStatus> convertedStudentCourseList = studentCourseConverter.convertStudentCourseWithApplicationStatus(
         studentCourseList, applicationStatusList);
-    return studentConverter.convertStudentDetails(studentList, convertedStudentCourseList);
+    List<StudentDetail> convertedStudentDetailList = studentConverter.convertStudentDetails(studentList, convertedStudentCourseList);
+
+    if(filterParam.isAllFieldNull()) {
+        return convertedStudentDetailList;
+    }
+
+    List<StudentDetail> filteredStudentDetailList = studentFilter.filterStudentDetails(convertedStudentDetailList, filterParam);
+
+    if(filteredStudentDetailList.isEmpty()) {
+        throw new NotFoundException("条件に該当する受講生は存在しません");
+    }
+
+    return filteredStudentDetailList;
   }
 
-  public List<StudentDetail> filterStudentDetailList() {
-      List<StudentDetail> studentDetailList = repository.filterStudentDetail();
-      return studentDetailList;
-  }
 
   /**
    * 受講生詳細検索です。IDに紐づく受講生情報を取得した後、その受講生に紐づく受講生コース情報を取得して設定します。

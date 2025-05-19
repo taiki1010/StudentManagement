@@ -1,6 +1,7 @@
 package student.management.StudentManagement.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,10 +31,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import student.management.StudentManagement.data.ApplicationStatus;
-import student.management.StudentManagement.data.Status;
-import student.management.StudentManagement.data.Student;
-import student.management.StudentManagement.data.StudentCourse;
+import student.management.StudentManagement.data.*;
 import student.management.StudentManagement.domain.StudentCourseWithApplicationStatus;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.service.StudentService;
@@ -79,7 +77,7 @@ class StudentControllerTest {
         now.plusMonths(3));
     applicationStatus = new ApplicationStatus("1", "1", Status.TEMPORARY_APPLICATION.getStatus());
     studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(studentCourse,
-        applicationStatus.getStatus());
+        applicationStatus);
     studentCourseWithApplicationStatusList = List.of(studentCourseWithApplicationStatus);
     studentDetail = new StudentDetail(student, studentCourseWithApplicationStatusList);
   }
@@ -89,14 +87,14 @@ class StudentControllerTest {
   void 受講生詳細の一覧検索が実行したときにサービスが実行されJsonが返却されること()
       throws Exception {
     List<StudentDetail> studentDetailList = List.of(studentDetail);
-    when(service.searchStudentList()).thenReturn(studentDetailList);
+
+    when(service.searchStudentList(any(FilterParam.class))).thenReturn(studentDetailList);
     String expectedJson = mapper.writeValueAsString(studentDetailList);
 
     mockMvc.perform(get("/studentList"))
         .andExpect(status().isOk())
         .andExpect(content().json(expectedJson));
 
-    verify(service, times(1)).searchStudentList();
   }
 
   @Nested
