@@ -72,20 +72,24 @@ class StudentServiceTest {
 
   @Test
   @DisplayName("searchStudentList()の機能実装")
-  void 受講生詳細の一覧検索_パラメータがnullの場合リポジトリとコンバータの処理が適切に呼び出せていること() {
+  void 受講生詳細の一覧検索_パラメータがnullの場合リポジトリとコンバータの処理が呼び出され受講生詳細が返却されること() {
     List<Student> studentList = List.of(student);
+    List<StudentDetail> studentDetailList = List.of(studentDetail);
     when(repository.search()).thenReturn(studentList);
     when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
     when(repository.searchApplicationStatusList()).thenReturn(applicationStatusList);
     when(studentCourseConverter.convertStudentCourseWithApplicationStatus(studentCourseList,
         applicationStatusList)).thenReturn(studentCourseWithApplicationStatusList);
+    when(studentConverter.convertStudentDetails(studentList, studentCourseWithApplicationStatusList))
+            .thenReturn(studentDetailList);
 
-    sut.searchStudentList(new FilterParam(null,null,null,null));
+    List<StudentDetail> actual = sut.searchStudentList(new FilterParam(null,null,null,null));
 
     verify(repository, times(1)).search();
     verify(repository, times(1)).searchStudentCourseList();
     verify(studentConverter, times(1)).convertStudentDetails(studentList,
         studentCourseWithApplicationStatusList);
+    assertEquals(studentDetailList, actual);
   }
 
   @Test
@@ -103,13 +107,15 @@ class StudentServiceTest {
     when(studentFilter.filterStudentDetails(studentDetailList, param))
             .thenReturn(studentDetailList);
 
-    sut.searchStudentList(param);
+    List<StudentDetail> actual = sut.searchStudentList(param);
 
     verify(repository, times(1)).search();
     verify(repository, times(1)).searchStudentCourseList();
     verify(studentConverter, times(1)).convertStudentDetails(studentList,
             studentCourseWithApplicationStatusList);
     verify(studentFilter, times(1)).filterStudentDetails(studentDetailList, param);
+
+    assertEquals(studentDetailList, actual);
   }
 
   @Test
