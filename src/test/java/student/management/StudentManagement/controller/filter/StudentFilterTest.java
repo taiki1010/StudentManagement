@@ -52,26 +52,37 @@ class StudentFilterTest {
         assertEquals(studentDetailList, actual);
     }
 
+    @Test
     void 地域パラメータに該当する場合受講生詳細リストが返却されること() {
         FilterParam param = new FilterParam(null, "東京", null, null);
         List<StudentDetail> actual = sut.filterStudentDetails(studentDetailList, param);
         assertEquals(studentDetailList, actual);
     }
 
+    @Test
     void 性別パラメータに該当する場合受講生詳細リストが返却されること() {
         FilterParam param = new FilterParam(null, null, "男性", null);
         List<StudentDetail> actual = sut.filterStudentDetails(studentDetailList, param);
         assertEquals(studentDetailList, actual);
     }
 
+    @Test
     void コース名パラメータに該当する場合受講生詳細リストが返却されること() {
         FilterParam param = new FilterParam(null, null, null, "Javaフルコース");
         List<StudentDetail> actual = sut.filterStudentDetails(studentDetailList, param);
         assertEquals(studentDetailList, actual);
     }
 
-    void パラメータがすべてnullの場合空のリストが返却されること() {
+    @Test
+    void パラメータがすべてnullの場合受講生詳細リストが返却されること() {
         FilterParam param = new FilterParam(null, null, null, null);
+        List<StudentDetail> actual = sut.filterStudentDetails(studentDetailList, param);
+        assertEquals(studentDetailList, actual);
+    }
+
+    @Test
+    void パラメータに該当する情報が存在しない場合空のリストが返却されること() {
+        FilterParam param = new FilterParam("野口", null, null, null);
         List<StudentDetail> expected = List.of();
         List<StudentDetail> actual = sut.filterStudentDetails(studentDetailList, param);
         assertEquals(expected, actual);
