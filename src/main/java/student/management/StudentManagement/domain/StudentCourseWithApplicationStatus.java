@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import student.management.StudentManagement.data.ApplicationStatus;
 import student.management.StudentManagement.data.StudentCourse;
 
 @Data
@@ -15,5 +16,5 @@ public class StudentCourseWithApplicationStatus {
   private StudentCourse studentCourse;
 
   @Valid
-  private String status;
+  private ApplicationStatus applicationStatus;
 }

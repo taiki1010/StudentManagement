@@ -17,13 +17,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import student.management.StudentManagement.controller.converter.StudentConverter;
+import student.management.StudentManagement.data.FilterParam;
 import student.management.StudentManagement.data.StudentCourse;
 import student.management.StudentManagement.domain.StudentDetail;
 import student.management.StudentManagement.exception.NotFoundException;
@@ -55,9 +51,10 @@ public class StudentController {
       )}
   )
   @GetMapping("/studentList")
-  public List<StudentDetail> getStudentList() throws NotFoundException {
-    return service.searchStudentList();
+  public List<StudentDetail> getStudentList(@ModelAttribute @Valid FilterParam filterParam) throws NotFoundException {
+      return service.searchStudentList(filterParam);
   }
+
 
   @Operation(
       summary = "受講生検索", description = "受講生一人分の詳細を検索します。idに紐づく生徒が存在しない場合エラーが発生します。",

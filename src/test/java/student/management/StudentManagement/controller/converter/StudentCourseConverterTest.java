@@ -23,7 +23,7 @@ class StudentCourseConverterTest {
     ApplicationStatus applicationStatus = new ApplicationStatus("1", "1",
         Status.TEMPORARY_APPLICATION.getStatus());
     StudentCourseWithApplicationStatus studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus(
-        studentCourse, applicationStatus.getStatus());
+        studentCourse, applicationStatus);
 
     List<StudentCourse> studentCourseList = List.of(studentCourse);
     List<ApplicationStatus> applicationStatusList = List.of(applicationStatus);

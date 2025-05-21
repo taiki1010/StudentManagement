@@ -13,17 +13,23 @@ public class StudentCourseConverter {
 
   public List<StudentCourseWithApplicationStatus> convertStudentCourseWithApplicationStatus(
       List<StudentCourse> studentCourseList, List<ApplicationStatus> applicationStatusList) {
+
     List<StudentCourseWithApplicationStatus> studentCourseWithApplicationStatusList = new ArrayList<>();
+
     studentCourseList.forEach(studentCourse -> {
+
       StudentCourseWithApplicationStatus studentCourseWithApplicationStatus = new StudentCourseWithApplicationStatus();
+
       applicationStatusList.forEach(applicationStatus -> {
+
         if (Objects.equals(studentCourse.getId(), applicationStatus.getCourseId())) {
           studentCourseWithApplicationStatus.setStudentCourse(studentCourse);
-          studentCourseWithApplicationStatus.setStatus(applicationStatus.getStatus());
-        }
-      });
-      studentCourseWithApplicationStatusList.add(studentCourseWithApplicationStatus);
+          studentCourseWithApplicationStatus.setApplicationStatus(applicationStatus);
+        };
+
     });
+      studentCourseWithApplicationStatusList.add(studentCourseWithApplicationStatus);
+
+  });
     return studentCourseWithApplicationStatusList;
-  }
-}
+}}
