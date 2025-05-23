@@ -151,7 +151,7 @@ class StudentRepositoryTest {
 
   @Test
   void 受講生の登録が行えること() {
-    Student student = new Student(Integer.toString(anyInt()), "山田 太郎", "ヤマダ タロウ",
+    Student student = new Student("1", "山田 太郎", "ヤマダ タロウ",
         "やまちゃん", "yama@example.com", "東京", 30, "男性", "", false
     );
 
@@ -173,7 +173,7 @@ class StudentRepositoryTest {
   @Test
   void 受講生コースの登録が行えること() {
     LocalDateTime now = LocalDateTime.of(2025, 5, 20, 11, 0);
-    StudentCourse studentCourse = new StudentCourse(Integer.toString(anyInt()), "1",
+    StudentCourse studentCourse = new StudentCourse("1", "1",
         "Webマーケティングコース", now, now.plusMonths(3));
 
     List<StudentCourse> expected = insertedStudentCourseList;
@@ -190,7 +190,7 @@ class StudentRepositoryTest {
 
   @Test
   void 申込状況の登録が行えること() {
-    ApplicationStatus applicationStatus = new ApplicationStatus(Integer.toString(anyInt()), "1",
+    ApplicationStatus applicationStatus = new ApplicationStatus("1", "1",
         Status.TEMPORARY_APPLICATION.getStatus());
 
     List<ApplicationStatus> expected = insertedApplicationStatusList;
