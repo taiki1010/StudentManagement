@@ -13,7 +13,7 @@ env:
   DEST_PATH: '/home/ec2-user/StudentManagement.jar'
 
 jobs:
-  deploy:
+  deploy2:
 
     runs-on: ubuntu-latest
     steps:
