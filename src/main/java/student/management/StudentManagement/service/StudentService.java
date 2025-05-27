@@ -105,7 +105,7 @@ public class StudentService {
           String studentCourseId = studentCourse.getId();
           applicationStatus.setCourseId(studentCourseId);
           applicationStatus.setStatus(status);
-          studentCourseWithApplicationStatus.getApplicationStatus().setStatus(status);
+          studentCourseWithApplicationStatus.setApplicationStatus(applicationStatus);
           repository.registerApplicationStatus(applicationStatus);
         });
     return studentDetail;
