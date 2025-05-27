@@ -1,0 +1,13 @@
+services:
+  mysql:
+    container_name: StudentManagementDB
+    image: mysql:latest
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: tawashigogo!
+      MYSQL_DATABASE: StudentManagement
+    ports:
+      - '3308:3306'
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/sql:/docker-entrypoint-initdb.d
